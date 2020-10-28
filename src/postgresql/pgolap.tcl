@@ -51,9 +51,13 @@ return
 }
 
 proc ConnectToPostgres { host port user password dbname } {
+    set is_su [string match '*@*' $a]
+    if {!is_su} {
+        set machine [lindex [split  "$host"  .] 0]
+        set user "$user@$machine"
+    }
     global tcl_platform
-    set machine [lindex [split  "$host"  .] 0]
-    set user "$user@$machine"
+
     if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = 1 ]]} message]} {
     set lda "Failed" ; puts $message
     error $message
