@@ -76,9 +76,9 @@ if { [pg_result $result -numTuples] == 0 } {
 
 set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
 incr stmnt_count;
-set su [lindex [split  "$superuser"  @] 0]
+#set su [lindex [split  "$superuser"  @] 0]
 
-set sql($stmnt_count) "GRANT $user to $su"
+set sql($stmnt_count) "GRANT $user to '$su'"
 
 
     } else {
