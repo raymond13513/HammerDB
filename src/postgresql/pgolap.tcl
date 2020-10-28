@@ -777,22 +777,30 @@ return [ expr $rowcount ]
 }
 
 proc ConnectToPostgres { host port user password dbname } {
-global tcl_platform
-if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]} message]} {
-set lda "Failed" ; puts $message
-error $message
- } else {
-if {$tcl_platform(platform) == "windows"} {
-#Workaround for Bug #95 where first connection fails on Windows
-catch {pg_disconnect $lda}
-set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
-        }
-pg_notice_handler $lda puts
-set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
-pg_result $result -clear
-        }
-return $lda
+    set is_super_user [string match "*@*" $user]
+    if {$is_super_user == 0} {
+        set machine [lindex [split  "$host"  .] 0]
+        set user "$user@$machine"
+    }
+    puts "$user $password $host $port $is_super_user"
+    global tcl_platform
+
+    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = 1 ]]} message]} {
+    set lda "Failed" ; puts $message
+    error $message
+     } else {
+    if {$tcl_platform(platform) == "windows"} {
+    #Workaround for Bug #95 where first connection fails on Windows
+    catch {pg_disconnect $lda}
+    set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
+            }
+    pg_notice_handler $lda puts
+    set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
+    pg_result $result -clear
+            }
+    return $lda
 }
+
 #########################
 #TPCH REFRESH PROCEDURE
 proc mk_order_ref { lda upd_num scale_factor trickle_refresh REFRESH_VERBOSE } {
@@ -1370,21 +1378,29 @@ return [ expr $rowcount ]
 }
 
 proc ConnectToPostgres { host port user password dbname } {
-global tcl_platform
-if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]} message]} {
-puts $message
-error $message
- } else {
-if {$tcl_platform(platform) == "windows"} {
-#Workaround for Bug #95 where first connection fails on Windows
-catch {pg_disconnect $lda}
-set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
-        }
-pg_notice_handler $lda puts
-set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
-pg_result $result -clear
-        }
-return $lda
+proc ConnectToPostgres { host port user password dbname } {
+    set is_super_user [string match "*@*" $user]
+    if {$is_super_user == 0} {
+        set machine [lindex [split  "$host"  .] 0]
+        set user "$user@$machine"
+    }
+    puts "$user $password $host $port $is_super_user"
+    global tcl_platform
+
+    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = 1 ]]} message]} {
+    set lda "Failed" ; puts $message
+    error $message
+     } else {
+    if {$tcl_platform(platform) == "windows"} {
+    #Workaround for Bug #95 where first connection fails on Windows
+    catch {pg_disconnect $lda}
+    set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
+            }
+    pg_notice_handler $lda puts
+    set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
+    pg_result $result -clear
+            }
+    return $lda
 }
 
 proc create_median_and_percentile { lda } {
