@@ -78,8 +78,6 @@ proc CreateUserDatabase { lda host port db tspace superuser superuser_password u
         set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
         incr stmnt_count;
         set su [lindex [split  "$superuser"  @] 0]
-
-        incr stmnt_count;
         set sql($stmnt_count) "GRANT $user to $su"
 
     } else {
