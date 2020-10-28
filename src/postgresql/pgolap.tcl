@@ -51,21 +51,23 @@ return
 }
 
 proc ConnectToPostgres { host port user password dbname } {
-global tcl_platform
-if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]} message]} {
-set lda "Failed" ; puts $message
-error $message
- } else {
-if {$tcl_platform(platform) == "windows"} {
-#Workaround for Bug #95 where first connection fails on Windows
-catch {pg_disconnect $lda}
-set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
-        }
-pg_notice_handler $lda puts
-set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
-pg_result $result -clear
-        }
-return $lda
+    global tcl_platform
+    set machine [lindex [split  "$host"  .] 0]
+    set user "$user@$machine"
+    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]} message]} {
+    set lda "Failed" ; puts $message
+    error $message
+     } else {
+    if {$tcl_platform(platform) == "windows"} {
+    #Workaround for Bug #95 where first connection fails on Windows
+    catch {pg_disconnect $lda}
+    set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname ]]
+            }
+    pg_notice_handler $lda puts
+    set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
+    pg_result $result -clear
+            }
+    return $lda
 }
 
 proc CreateUserDatabase { lda host port db tspace superuser superuser_password user password } {
