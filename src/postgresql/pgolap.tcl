@@ -51,8 +51,8 @@ return
 }
 
 proc ConnectToPostgres { host port user password dbname } {
-    set is_su [string match '*@*' $user]
-    if {$is_su == 0} {
+    set is_super_user [string match '*@*' $user]
+    if {$is_super_user == 0} {
         set machine [lindex [split  "$host"  .] 0]
         set user "$user@$machine"
     }
