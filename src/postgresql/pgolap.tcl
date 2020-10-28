@@ -73,8 +73,8 @@ proc CreateUserDatabase { lda host port db tspace superuser superuser_password u
     puts "CREATING DATABASE $db under OWNER $user"
     set result [ pg_exec $lda "SELECT 1 FROM pg_roles WHERE rolname = '$user'"]
     if { [pg_result $result -numTuples] == 0 } {
-        set sql($stmnt_count) "CREATE ROLE o";
-        incr stmnt_count;
+        #set sql($stmnt_count) "CREATE ROLE o";
+        #incr stmnt_count;
         set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
         incr stmnt_count;
         set su [lindex [split  "$superuser"  @] 0]
