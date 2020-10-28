@@ -69,42 +69,43 @@ return $lda
 }
 
 proc CreateUserDatabase { lda host port db tspace superuser superuser_password user password } {
-set stmnt_count 1
-puts "CREATING DATABASE $db under OWNER $user"
-set result [ pg_exec $lda "SELECT 1 FROM pg_roles WHERE rolname = '$user'"]
-if { [pg_result $result -numTuples] == 0 } {
+    set stmnt_count 1
+    puts "CREATING DATABASE $db under OWNER $user"
+    set result [ pg_exec $lda "SELECT 1 FROM pg_roles WHERE rolname = '$user'"]
+    if { [pg_result $result -numTuples] == 0 } {
+        set sql($stmnt_count) "CREATE ROLE o";
+        incr stmnt_count;
+        set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
+        incr stmnt_count;
+        set su [lindex [split  "$superuser"  @] 0]
 
-set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
-incr stmnt_count;
-set su [lindex [split  "$superuser"  @] 0]
-
-set sql($stmnt_count) "GRANT $user to '$su'"
-puts "COME"
+        incr stmnt_count;
+        set sql($stmnt_count) "GRANT $user to $su"
 
     } else {
-puts "Using existing User $user for Schema build"
-set sql($stmnt_count) "ALTER USER $user PASSWORD '$password'"
+        puts "Using existing User $user for Schema build"
+        set sql($stmnt_count) "ALTER USER $user PASSWORD '$password'"
     }
-incr stmnt_count;
-set result [ pg_exec $lda "SELECT 1 FROM pg_database WHERE datname = '$db'"]
-if { [pg_result $result -numTuples] == 0} {
-set sql($stmnt_count) "CREATE DATABASE $db OWNER $user"
+    incr stmnt_count;
+    set result [ pg_exec $lda "SELECT 1 FROM pg_database WHERE datname = '$db'"]
+    if { [pg_result $result -numTuples] == 0} {
+        set sql($stmnt_count) "CREATE DATABASE $db OWNER $user"
     } else {
-set existing_db [ ConnectToPostgres $host $port $superuser $superuser_password $db ]
-if { $existing_db eq "Failed" } {
-error "error, the database connection to $host could not be established"
+        set existing_db [ ConnectToPostgres $host $port $superuser $superuser_password $db ]
+    if { $existing_db eq "Failed" } {
+        error "error, the database connection to $host could not be established"
+    } else {
+        set result [ pg_exec $existing_db "SELECT 1 FROM pg_tables WHERE schemaname = 'public'"]
+        if { [pg_result $result -numTuples] == 0 } {
+            puts "Using existing empty Database $db for Schema build"
+            set sql($stmnt_count) "ALTER DATABASE $db OWNER TO $user"
         } else {
-set result [ pg_exec $existing_db "SELECT 1 FROM pg_tables WHERE schemaname = 'public'"]
-if { [pg_result $result -numTuples] == 0 } {
-puts "Using existing empty Database $db for Schema build"
-set sql($stmnt_count) "ALTER DATABASE $db OWNER TO $user"
-            } else {
-puts "Database with tables $db exists"
-error "Database $db exists but is not empty, specify a new or empty database name"
-            }
+            puts "Database with tables $db exists"
+            error "Database $db exists but is not empty, specify a new or empty database name"
         }
-pg_disconnect $existing_db
     }
+    pg_disconnect $existing_db
+}
 if { $tspace != "pg_default" } {
 incr stmnt_count
 set sql($stmnt_count) "ALTER DATABASE $db SET TABLESPACE $tspace"
