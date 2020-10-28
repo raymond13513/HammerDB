@@ -1378,7 +1378,6 @@ return [ expr $rowcount ]
 }
 
 proc ConnectToPostgres { host port user password dbname } {
-proc ConnectToPostgres { host port user password dbname } {
     set is_super_user [string match "*@*" $user]
     if {$is_super_user == 0} {
         set machine [lindex [split  "$host"  .] 0]
