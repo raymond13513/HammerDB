@@ -73,10 +73,11 @@ set stmnt_count 1
 puts "CREATING DATABASE $db under OWNER $user"
 set result [ pg_exec $lda "SELECT 1 FROM pg_roles WHERE rolname = '$user'"]
 if { [pg_result $result -numTuples] == 0 } {
+
 set sql($stmnt_count) "CREATE USER $user PASSWORD '$password'"
 incr stmnt_count;
-puts "TEST"
-set sql($stmnt_count) "GRANT $user to $superuser"
+
+#set sql($stmnt_count) "GRANT $user to $superuser"
     } else {
 puts "Using existing User $user for Schema build"
 set sql($stmnt_count) "ALTER USER $user PASSWORD '$password'"
