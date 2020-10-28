@@ -56,6 +56,7 @@ proc ConnectToPostgres { host port user password dbname } {
         set machine [lindex [split  "$host"  .] 0]
         set user "$user@$machine"
     }
+    puts "$user $password $host $port"
     global tcl_platform
 
     if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = 1 ]]} message]} {
