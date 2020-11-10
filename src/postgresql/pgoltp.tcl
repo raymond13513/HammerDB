@@ -1590,14 +1590,14 @@ proc ConnectToPostgres { host port azure user password dbname } {
     }
 
 global tcl_platform
-    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" ; puts $message
 error $message
  } else {
 if {$tcl_platform(platform) == "windows"} {
 #Workaround for Bug #95 where first connection fails on Windows
 catch {pg_disconnect $lda}
-            set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
+set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
         }
 pg_notice_handler $lda puts
 set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
@@ -1630,7 +1630,7 @@ set result [ pg_exec $lda "SELECT 1 FROM pg_database WHERE datname = '$db'"]
 if { [pg_result $result -numTuples] == 0} {
 set sql($stmnt_count) "CREATE DATABASE $db OWNER $user"
     } else {
-        set existing_db [ ConnectToPostgres $host $port $azure $superuser $superuser_password $db  ]
+set existing_db [ ConnectToPostgres $host $port $azure $superuser $superuser_password $db  ]
 if { $existing_db eq "Failed" } {
 error "error, the database connection to $host could not be established"
         } else {
@@ -2542,14 +2542,14 @@ proc ConnectToPostgres { host port azure user password dbname } {
     }
 
 global tcl_platform
-    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" ; puts $message
 error $message
  } else {
 if {$tcl_platform(platform) == "windows"} {
 #Workaround for Bug #95 where first connection fails on Windows
 catch {pg_disconnect $lda}
-            set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
+set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
         }
 pg_notice_handler $lda puts
 set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
@@ -2873,14 +2873,14 @@ proc ConnectToPostgres { host port azure user password dbname } {
     }
 
 global tcl_platform
-    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" ; puts $message
 error $message
  } else {
 if {$tcl_platform(platform) == "windows"} {
 #Workaround for Bug #95 where first connection fails on Windows
 catch {pg_disconnect $lda}
-            set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
+set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
         }
 pg_notice_handler $lda puts
 set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
@@ -3320,14 +3320,14 @@ proc ConnectToPostgres { host port azure user password dbname } {
     }
 
 global tcl_platform
-    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" ; puts $message
 error $message
  } else {
 if {$tcl_platform(platform) == "windows"} {
 #Workaround for Bug #95 where first connection fails on Windows
 catch {pg_disconnect $lda}
-            set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
+set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]
         }
 pg_notice_handler $lda puts
 set result [ pg_exec $lda "set CLIENT_MIN_MESSAGES TO 'ERROR'" ]
@@ -3489,7 +3489,7 @@ proc ConnectToPostgresAsynch { host port azure user password dbname RAISEERROR c
 
 global tcl_platform
 puts "Connecting to database $dbname"
-    if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" 
 if { $RAISEERROR } {
 puts "$clientname:login failed:$message"
@@ -3499,7 +3499,7 @@ return "$clientname:login failed:$message"
 if {$tcl_platform(platform) == "windows"} {
 #Workaround for Bug #95 where first connection fails on Windows
 catch {pg_disconnect $lda}
-            if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
+if {[catch {set lda [pg_connect -conninfo [list host = $host port = $port user = $user password = $password dbname = $dbname requiressl = $sslConnectionEnabled ]]} message]} {
 set lda "Failed" 
 if { $RAISEERROR } {
 puts "$clientname:login failed:$message"
